@@ -47,7 +47,6 @@ data/*.csv
 data/*.xlsx
 data/*.pkl
 files/
-outputs/
 scratch/
 *.log
 .ipynb_checkpoints/
