@@ -1,0 +1,2 @@
+typing_speed_ms,typing_regularity,copy_paste_detected,mouse_movement_entropy,time_on_page_sec,field_focus_changes,form_fill_duration_ms,tab_switches,scroll_events,is_new_device,device_fingerprint_match,ip_country_match,ip_is_vpn_proxy,time_since_last_login_min,login_failed_attempts,session_age_sec,is_mobile_desktop_mismatch,is_new_beneficiary,amt_vs_avg_ratio,transactions_last_hour,is_international,hour_of_day,is_weekend
+180,0.85,0,0.78,45,5,12000,1,8,0,1,1,0,120,0,300,0,0,1.0,1,0,14,0
