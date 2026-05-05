@@ -1,4 +1,4 @@
-# 🛡️ FraudShield v3 — Système Avancé de Détection de Fraude
+# 🛡️ FraudShield — Système Avancé de Détection de Fraude
 
 **Projet de Stage - Bank of Africa (BMCE)**
 Une plateforme bicouche combinant l'analyse de transactions par Deep Learning et le monitoring comportemental de session.
