@@ -531,8 +531,3 @@ fraud_detection_project/
 | **Early Stopping** | Arrêt anticipé de l'entraînement quand la performance cesse de s'améliorer |
 | **Gradient Boosting** | Technique d'ensemble construisant séquentiellement des apprenants faibles |
 | **SPA** | Single Page Application. Application web avec une seule page HTML chargée dynamiquement |
-
----
-
-*Rapport généré automatiquement depuis l'analyse du projet FraudShield v3 — Bank of Africa (BMCE) — 2026*
-*Auteur : Stagiaire 3IASD — drbynz0*
