@@ -11,6 +11,8 @@ import ChatBot       from './pages/ChatBot';
 import BSMPredict    from './pages/BSMPredict';
 import BSMHistory    from './pages/BSMHistory';
 import BSMFilePredict from './pages/BSMFilePredict';
+import BSMSimulator from './pages/BSMSimulator';
+import BSMLiveDemo from './pages/BSMLiveDemo';
 import { api }       from './services/api';
 
 export default function App() {
@@ -38,6 +40,8 @@ export default function App() {
     bsm:        BSMPredict,
     bsmfile:    BSMFilePredict,
     bsmhistory: BSMHistory,
+    bsmsimulator: BSMSimulator,
+    bsmlive: BSMLiveDemo,
   };
 
   const PageComponent = pages[page] || Dashboard;

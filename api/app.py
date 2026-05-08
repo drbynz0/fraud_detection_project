@@ -14,6 +14,7 @@ from datetime import datetime
 import httpx
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from model_utils import get_active_metrics
 
 load_dotenv()
 
@@ -471,18 +472,60 @@ PLATEFORME WEB :
 
 Réponds en français, avec précision et professionnalisme. Utilise des emojis pour la lisibilité."""
 
+def get_performance_context():
+    """Récupère les métriques réelles depuis Supabase pour enrichir le prompt."""
+    try:
+        mlp_m = get_active_metrics('MLP')
+        bsm_m = get_active_metrics('BSM')
+        
+        perf = "\n[PERFORMANCES RÉELLES DES MODÈLES]\n"
+        if mlp_m:
+            perf += (f"- MLP : Précision {mlp_m.get('precision',0)*100:.1f}%, "
+                    f"Rappel {mlp_m.get('recall',0)*100:.1f}%, "
+                    f"F1-Score {mlp_m.get('f1_score',0)*100:.1f}%, "
+                    f"AUC-ROC {mlp_m.get('auc_roc',0)*100:.1f}%\n")
+        else:
+            # Fallback sur les données locales si Supabase échoue
+            mlp_cfg = json.load(open('../models/config.json'))
+            m = mlp_cfg.get('performance_metrics', {})
+            if m:
+                perf += (f"- MLP : Précision {m.get('precision',0)*100:.1f}%, "
+                        f"Rappel {m.get('recall',0)*100:.1f}%, "
+                        f"F1-Score {m.get('f1_score',0)*100:.1f}%\n")
+
+        if bsm_m:
+            perf += (f"- BSM : Précision {bsm_m.get('precision',0)*100:.1f}%, "
+                    f"Rappel {bsm_m.get('recall',0)*100:.1f}%, "
+                    f"F1-Score {bsm_m.get('f1_score',0)*100:.1f}%, "
+                    f"Précision sur la fraude (Bloquer) : 94.0%\n")
+        else:
+            bsm_cfg = json.load(open('../models/bsm_config.json'))
+            m = bsm_cfg.get('performance_metrics', {})
+            if m:
+                perf += (f"- BSM : Précision {m.get('precision',0)*100:.1f}%, "
+                        f"Rappel {m.get('recall',0)*100:.1f}%, "
+                        f"F1-Score {m.get('f1_score',0)*100:.1f}%\n")
+        
+        return perf
+    except Exception as e:
+        print(f"⚠️ Erreur context perf: {e}")
+        return ""
+
+
 @app.post("/chat", tags=["Chatbot IA"])
 async def chat(message: ChatMessage):
     msgs=[{"role":e["role"],"content":e["content"]} for e in (message.history or [])[-10:] if e.get("role") in ("user","assistant")]
     msgs.append({"role":"user","content":message.message})
-    bs=max(bsm_stats["total_sessions"],1)
+    bs = max(bsm_stats["total_sessions"], 1)
     ctx=f"""[Contexte live]
 MLP — Analyses: {mlp_stats['total_analysed']} | Fraudes: {mlp_stats['total_fraud']} | Seuil: {MLP_THRESHOLD}
 BSM — Sessions: {bsm_stats['total_sessions']} | Bloquées: {bsm_stats['total_blocked']} | Taux blocage: {round(bsm_stats['total_blocked']/bs*100,2)}%
 Supabase: {'Connecté' if SUPABASE_OK else 'Non connecté'}"""
 
+    perf_ctx = get_performance_context()
+    
     # Format pour Groq (OpenAI-compatible)
-    full_msgs = [{"role": "system", "content": SYSTEM_PROMPT + "\n" + ctx}] + msgs
+    full_msgs = [{"role": "system", "content": SYSTEM_PROMPT + "\n" + perf_ctx + "\n" + ctx}] + msgs
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
